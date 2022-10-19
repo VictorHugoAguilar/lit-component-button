@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+        <title>VHAA - Component Button Test</title>
+
+        <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+        <script src="../node_modules/wct-browser-legacy/browser.js"></script>
+
+        <script type="module" src="../index.js"></script>
+    </head>
+    <body>
+        <test-fixture id="BasicTestFixture">
+            <template>
+                <vhaa-button></vhaa-button>
+            </template>
+        </test-fixture>
+
+        <script type="module">
+            import "../index.js";
+            suite("create element vhaa-button", () => {
+                let myEle;
+
+                setup(() => {
+                    myEle = fixture("BasicTestFixture");
+                });
+
+                suite("when add a element without role", () => {
+                    test("then show a button without role", (done) => {
+                        flush(() => {
+                            const elementShadowRoot = myEle.shadowRoot;
+                            const elementHeader = elementShadowRoot.querySelector("div");
+                            assert.equal(elementHeader.className, "undefined");
+                            done();
+                        });
+                    });
+                });
+
+                suite("when add a element with role primary", () => {
+                    test("then show a button with role", (done) => {
+                        myEle.role = "primary";
+                        flush(() => {
+                            const elementShadowRoot = myEle.shadowRoot;
+                            const elementHeader = elementShadowRoot.querySelector("div");
+                            assert.equal(elementHeader.className, "primary");
+                            done();
+                        });
+                    });
+
+                    test("then click an event is raised", (done) => {
+                        myEle.role = "primary";
+                        myEle.disabled = false;
+                        const callback = sinon.spy();
+                        myEle.addEventListener("button-click", callback, { once: true });
+                        flush(() => {
+                            const elementShadowRoot = myEle.shadowRoot;
+                            const elementHeader = elementShadowRoot.querySelector("div");
+                            assert.equal(elementHeader.className, "primary");
+                            const eventClick = new Event("click", {
+                                bubbles: true,
+                                cancelable: true,
+                            });
+                            elementHeader.dispatchEvent(eventClick);
+                            expect(callback).called;
+                            done();
+                        });
+                    });
+                });
+
+                suite("when add a element with role primary and disabled", () => {
+                    test("then click an event is not raised", (done) => {
+                        myEle.role = "primary";
+                        myEle.disabled = true;
+                        const callback = sinon.spy();
+                        myEle.addEventListener("button-click", callback, { once: true });
+                        flush(() => {
+                            const elementShadowRoot = myEle.shadowRoot;
+                            const elementHeader = elementShadowRoot.querySelector("div");
+                            assert.equal(elementHeader.className, "primary disabled");
+                            const eventClick = new Event("click", {
+                                bubbles: true,
+                                cancelable: true,
+                            });
+                            elementHeader.dispatchEvent(eventClick);
+                            expect(callback).not.called;
+                            done();
+                        });
+                    });
+                });
+            });
+        </script>
+    </body>
+</html>
