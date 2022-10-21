@@ -37,7 +37,7 @@ export class VhaaButton extends LitElement {
     }
     render() {
         return html`
-            <div @click="${this._onClick}" class="${this._getClass(this.role, this.disabled)}">
+            <div @click="${this._onClick}" class="${this._getClass()}">
                 <slot></slot>
             </div>
         `;
@@ -66,8 +66,8 @@ export class VhaaButton extends LitElement {
         this.role = "undefined";
     }
 
-    _getClass(role, disabled) {
-        return role + (disabled ? " disabled" : "");
+    _getClass() {
+        return this.role + (this.disabled ? " disabled" : "");
     }
 
     _onClick(e) {
@@ -75,6 +75,7 @@ export class VhaaButton extends LitElement {
             e.stopPropagation();
             return;
         }
+        this._registerClick();
         this.dispatchEvent(
             new CustomEvent("button-click", {
                 bubbles: true,
@@ -82,6 +83,10 @@ export class VhaaButton extends LitElement {
                 detail: this,
             })
         );
+    }
+
+    _registerClick() {
+        console.log("registrando click...");
     }
 }
 customElements.define("vhaa-button", VhaaButton);
